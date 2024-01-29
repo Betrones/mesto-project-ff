@@ -11,15 +11,17 @@ const createCard = (cardName, cardLink) => {
 
   const deleteButton = cardTemplateClone.querySelector('.card__delete-button')
 
-  deleteButton.addEventListener('click', () => {
-    const deletedCard = deleteButton.closest('.card')
-    deletedCard.remove()
-  })
+  deleteButton.addEventListener('click', deleteCard)
 
 
-  placesList.append(cardTemplateClone)
+  return cardTemplateClone
+}
+
+const deleteCard = (event) => {
+  const deletedCard = event.target.closest('.card')
+  deletedCard.remove()
 }
 
 for (let i = 0; i < initialCards.length; i++) {
-  createCard(initialCards[i].name, initialCards[i].link)
+  placesList.append(createCard(initialCards[i].name, initialCards[i].link))
 }
