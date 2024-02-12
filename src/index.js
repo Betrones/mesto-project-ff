@@ -66,7 +66,6 @@ const openPopupAdd = () => {
 const openCardPopup = (evt) => {
   popupImg.src = evt.target.src
   popupDesc.textContent = evt.target.closest('.card').children[2].children[0].textContent
-  console.log(evt)
 
   openModal(cardPopup)
 }
