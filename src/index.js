@@ -91,21 +91,8 @@ for (let i = 0; i < popups.length; i++) {
   popups[i].classList.add('popup_is-animated')
 }
 
-document.addEventListener('click', (evt) => {
-  if (evt.target.classList.contains('popup')) {
-    closeModal(evt)
-  }
-})
-
-document.addEventListener('keydown', (evt) => {
-  if (evt.key === "Escape") {
-    for (let i = 0; i < popups.length; i++) {
-      popups[i].classList.remove('popup_is-opened')
-    }
-  }
-})
-
 editBtn.addEventListener('click', openPopup)
 addBtn.addEventListener('click', openPopup)
 
 
+export {popups}
