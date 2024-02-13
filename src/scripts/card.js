@@ -1,4 +1,6 @@
-const createCard = (cardName, cardLink, delFn, likeFn, popupFn) => {
+import { openCardPopup } from '../index'
+
+const createCard = (cardName, cardLink, delFn, likeFn) => {
   const cardTemplateClone = document.querySelector('#card-template').content.querySelector('.card').cloneNode(true)
 
   const deleteButton = cardTemplateClone.querySelector('.card__delete-button')
@@ -11,7 +13,7 @@ const createCard = (cardName, cardLink, delFn, likeFn, popupFn) => {
 
   deleteButton.addEventListener('click', delFn)
   likeButton.addEventListener('click', likeFn)
-  cardImage.addEventListener('click', popupFn)
+  cardImage.addEventListener('click', (evt) => openCardPopup(cardName, cardLink))
 
   return cardTemplateClone
 }

@@ -12,7 +12,7 @@ const addBtn = document.querySelector('.profile__add-button')
 const editPopup = document.querySelector('.popup_type_edit')
 const addPopup = document.querySelector('.popup_type_new-card')
 const cardPopup = document.querySelector('.popup_type_image')
-const popupClose = document.querySelectorAll('.popup__close')
+const popupsClose = document.querySelectorAll('.popup__close')
 const popups = document.querySelectorAll('.popup')
 
 const profName = document.querySelector('.profile__title')
@@ -51,7 +51,7 @@ const addCard = (evt) => {
 
   const name = forms.newPlace.placeName.value
   const url = forms.newPlace.link.value
-  placesList.prepend(createCard(name, url, deleteCard, likeCard, openCardPopup))
+  placesList.prepend(createCard(name, url, deleteCard, likeCard))
 
   forms.newPlace.reset()
   closePopup(evt)
@@ -59,10 +59,10 @@ const addCard = (evt) => {
 
 forms.newPlace.addEventListener('submit', addCard)
 
-const openCardPopup = (evt) => {
-  popupImg.src = evt.target.src
-  popupDesc.textContent = evt.target.closest('.card').children[2].children[0].textContent
-  popupImg.alt = popupDesc.textContent
+const openCardPopup = (name, link) => {
+  popupImg.src = link
+  popupDesc.textContent = name
+  popupImg.alt = name
 
   openModal(cardPopup)
 }
@@ -72,14 +72,14 @@ const openPopupAdd = () => {
 }
 
 initialCards.forEach((elm) => {
-  placesList.append(createCard(elm.name, elm.link, deleteCard, likeCard, openCardPopup))
+  placesList.append(createCard(elm.name, elm.link, deleteCard, likeCard))
 })
 
 const closePopup = (evt) => {
   closeModal(evt.target.closest('.popup'))
 }
 
-popupClose.forEach((elm) => {
+popupsClose.forEach((elm) => {
   elm.addEventListener('click', closePopup)
 })
 
@@ -88,4 +88,4 @@ popups.forEach((popup) => popup.classList.add('popup_is-animated'))
 editBtn.addEventListener('click', openPopupEdit)
 addBtn.addEventListener('click', openPopupAdd)
 
-export { closePopup }
+export { closePopup, openCardPopup }
