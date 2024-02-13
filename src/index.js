@@ -22,7 +22,7 @@ const popupImg = document.querySelector('.popup__image')
 const popupDesc = document.querySelector('.popup__caption')
 
 
-const handleFormSubmit = (evt) => {
+const submitEditProfileForm = (evt) => {
   evt.preventDefault()
 
   profName.textContent = forms.editProfile.name.value
@@ -33,14 +33,14 @@ const handleFormSubmit = (evt) => {
   closeModal(evt)
 }
 
+forms.editProfile.addEventListener('submit', submitEditProfileForm)
+
 const openPopupEdit = () => {
-  let name = profName.textContent
-  let desc = profDesc.textContent
+  const name = profName.textContent
+  const desc = profDesc.textContent
 
   forms.editProfile.name.value = name
   forms.editProfile.description.value = desc
-
-  forms.editProfile.addEventListener('submit', handleFormSubmit)
 
   openModal(editPopup)
 }
@@ -49,50 +49,40 @@ const openPopupEdit = () => {
 const addCard = (evt) => {
   evt.preventDefault()
 
-  let name = forms.newPlace.placeName.value
-  let url = forms.newPlace.link.value
+  const name = forms.newPlace.placeName.value
+  const url = forms.newPlace.link.value
   placesList.prepend(createCard(name, url, deleteCard, likeCard, openCardPopup))
 
   forms.newPlace.reset()
   closeModal(evt)
 }
 
-const openPopupAdd = () => {
-  forms.newPlace.addEventListener('submit', addCard)
-  
-  openModal(addPopup)
-}
+forms.newPlace.addEventListener('submit', addCard)
 
 const openCardPopup = (evt) => {
   popupImg.src = evt.target.src
   popupDesc.textContent = evt.target.closest('.card').children[2].children[0].textContent
+  popupImg.alt = popupDesc.textContent
 
   openModal(cardPopup)
 }
 
-
-const openPopup = (evt) => {
-  if (evt.target === editBtn) {
-    openPopupEdit(evt)
-  } else if (evt.target === addBtn) {
-    openPopupAdd(evt)
-  }
+const openPopupAdd = () => {
+  openModal(addPopup)
 }
 
-for (let i = 0; i < initialCards.length; i++) {
-  placesList.append(createCard(initialCards[i].name, initialCards[i].link, deleteCard, likeCard, openCardPopup))
-}
+initialCards.forEach((elm) => {
+  placesList.append(createCard(elm.name, elm.link, deleteCard, likeCard, openCardPopup))
+})
 
-for (let i=0; i < closePopup.length; i++) {
-  closePopup[i].addEventListener('click', closeModal)
-}
+closePopup.forEach((elm) => {
+  elm.addEventListener('click', closeModal)
+})
 
-for (let i = 0; i < popups.length; i++) {
-  popups[i].classList.add('popup_is-animated')
-}
+popups.forEach((popup) => popup.classList.add('popup_is-animated'))
 
-editBtn.addEventListener('click', openPopup)
-addBtn.addEventListener('click', openPopup)
+editBtn.addEventListener('click', openPopupEdit)
+addBtn.addEventListener('click', openPopupAdd)
 
 
 export {popups}
