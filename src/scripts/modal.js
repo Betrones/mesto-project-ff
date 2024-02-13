@@ -1,11 +1,19 @@
 import {popups} from '../index.js'
 
+const closePopupByEsc = (evt) => {
+  if (evt.key === "Escape") {
+    closeModal(document.querySelector('.popup_is-opened'))
+  }
+}
+
 const openModal = (tar) => {
   tar.classList.add('popup_is-opened')
+  document.addEventListener('keydown', closePopupByEsc)
 }
 
 const closeModal = (evt) => {
-  evt.target.closest('.popup').classList.remove('popup_is-opened')
+  evt.classList.remove('popup_is-opened')
+  document.removeEventListener('keydown', closePopupByEsc)
 }
 
 document.addEventListener('click', (evt) => {
@@ -14,12 +22,6 @@ document.addEventListener('click', (evt) => {
   }
 })
 
-document.addEventListener('keydown', (evt) => {
-  if (evt.key === "Escape") {
-    for (let i = 0; i < popups.length; i++) {
-      popups[i].classList.remove('popup_is-opened')
-    }
-  }
-})
+
 
 export { openModal, closeModal }

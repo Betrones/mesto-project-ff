@@ -12,7 +12,7 @@ const addBtn = document.querySelector('.profile__add-button')
 const editPopup = document.querySelector('.popup_type_edit')
 const addPopup = document.querySelector('.popup_type_new-card')
 const cardPopup = document.querySelector('.popup_type_image')
-const closePopup = document.querySelectorAll('.popup__close')
+const popupClose = document.querySelectorAll('.popup__close')
 const popups = document.querySelectorAll('.popup')
 
 const profName = document.querySelector('.profile__title')
@@ -75,8 +75,12 @@ initialCards.forEach((elm) => {
   placesList.append(createCard(elm.name, elm.link, deleteCard, likeCard, openCardPopup))
 })
 
-closePopup.forEach((elm) => {
-  elm.addEventListener('click', closeModal)
+const closePopup = (evt) => {
+  closeModal(evt.target.closest('.popup'))
+}
+
+popupClose.forEach((elm) => {
+  elm.addEventListener('click', closePopup)
 })
 
 popups.forEach((popup) => popup.classList.add('popup_is-animated'))
