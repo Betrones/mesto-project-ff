@@ -30,7 +30,7 @@ const submitEditProfileForm = (evt) => {
 
   forms.editProfile.reset()
 
-  closeModal(evt)
+  closeModal(evt.target.closest('.popup'))
 }
 
 forms.editProfile.addEventListener('submit', submitEditProfileForm)
@@ -54,7 +54,7 @@ const addCard = (evt) => {
   placesList.prepend(createCard(name, url, deleteCard, likeCard, openCardPopup))
 
   forms.newPlace.reset()
-  closeModal(evt)
+  closePopup(evt)
 }
 
 forms.newPlace.addEventListener('submit', addCard)
@@ -88,5 +88,4 @@ popups.forEach((popup) => popup.classList.add('popup_is-animated'))
 editBtn.addEventListener('click', openPopupEdit)
 addBtn.addEventListener('click', openPopupAdd)
 
-
-export {popups}
+export { closePopup }

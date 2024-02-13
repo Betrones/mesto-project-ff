@@ -1,12 +1,13 @@
 const createCard = (cardName, cardLink, delFn, likeFn, popupFn) => {
-  const cardTemplateClone = document.querySelector('#card-template').content.cloneNode(true)
-
-  cardTemplateClone.querySelector('.card__image').src = cardLink
-  cardTemplateClone.querySelector('.card__title').textContent = cardName
+  const cardTemplateClone = document.querySelector('#card-template').content.querySelector('.card').cloneNode(true)
 
   const deleteButton = cardTemplateClone.querySelector('.card__delete-button')
   const likeButton = cardTemplateClone.querySelector('.card__like-button')
   const cardImage = cardTemplateClone.querySelector('.card__image')
+
+  cardImage.src = cardLink
+  cardImage.alt = cardName
+  cardTemplateClone.querySelector('.card__title').textContent = cardName
 
   deleteButton.addEventListener('click', delFn)
   likeButton.addEventListener('click', likeFn)
