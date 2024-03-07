@@ -1,0 +1,11 @@
+.popup__button_inactive {
+  opacity: 20%;
+  background: #fff;
+  color: #000;
+  border: #000 solid 1px;
+}
+
+.popup__button_inactive:hover {
+  background: #fff;
+  cursor: default;
+}
