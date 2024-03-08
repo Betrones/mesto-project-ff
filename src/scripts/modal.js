@@ -1,5 +1,3 @@
-import { closePopup } from "../index.js"
-
 const closePopupByEsc = (evt) => {
   if (evt.key === "Escape") {
     closeModal(document.querySelector('.popup_is-opened'))
@@ -7,8 +5,8 @@ const closePopupByEsc = (evt) => {
 }
 
 const closePopupByOverClick = (evt) => {
-  if (evt.target.classList.contains('popup') && !evt.target.classList.contains('popup__conent')) {
-    closePopup(evt)
+  if (evt.target.classList.contains('popup') && !evt.target.classList.contains('popup__content')) {
+    closeModal(evt)
   }
 }
 
@@ -18,11 +16,9 @@ const openModal = (tar) => {
 }
 
 const closeModal = (evt) => {
-  evt.classList.remove('popup_is-opened')
+  evt.target.closest('.popup').classList.remove('popup_is-opened')
   document.addEventListener('keydown', closePopupByEsc)
   document.removeEventListener('keydown', closePopupByEsc)
 }
 
-document.addEventListener('click', closePopupByOverClick)
-
-export { openModal, closeModal }
+export { openModal, closeModal, closePopupByOverClick }

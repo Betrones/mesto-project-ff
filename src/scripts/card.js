@@ -1,9 +1,29 @@
-import { openCardPopup, openDelPopup, toggleLikeOnCard } from '../index'
+import { addLike, removeLike } from "./api";
 
-const createCard = (delFn, likeFn, cardCfg) => {
+const toggleLikeOnCard = (evt) => {
+  const likedCardId = evt.target.closest('.card').id.slice(4)
+
+  if (!evt.target.classList.contains('card__like-button_is-active')) {
+    addLike(likedCardId)
+    .then((likedCard) => {
+      document.querySelector(`#card${likedCard._id}`).querySelector('.card__like-counter').textContent = likedCard.likes.length
+    })
+    .catch(err => console.log(err))
+  } else {
+    removeLike(likedCardId)
+    .then((likedCard) => {
+      document.querySelector(`#card${likedCard._id}`).querySelector('.card__like-counter').textContent = likedCard.likes.length
+    })
+    .catch(err => console.log(err))
+  }
+
+  evt.target.classList.toggle('card__like-button_is-active')
+}
+
+const createCard = (cardCfg, openCardPopup, openDelPopup, userId) => {
   const cardTemplateClone = document.querySelector('#card-template').content.querySelector('.card').cloneNode(true)
 
-  if (cardCfg.owner._id !== "8d457b6c91b7578275b3a7b8") {
+  if (cardCfg.owner._id !== userId) {
     cardTemplateClone.querySelector('.card__delete-button').setAttribute('style', 'display: none')
   }
 
@@ -18,30 +38,19 @@ const createCard = (delFn, likeFn, cardCfg) => {
   likeCounter.textContent = cardCfg.likes.length
   cardTemplateClone.querySelector('.card__title').textContent = cardCfg.name
 
-  deleteButton.addEventListener('click', delFn)
-  likeButton.addEventListener('click', likeFn)
-  cardImage.addEventListener('click', (evt) => openCardPopup(cardCfg.name, cardCfg.link))
+  deleteButton.addEventListener('click', (evt) => openDelPopup(evt))
+  likeButton.addEventListener('click', (evt) => toggleLikeOnCard(evt))
+  cardImage.addEventListener('click', () => openCardPopup(cardCfg.name, cardCfg.link))
 
   cardCfg.likes.forEach(like => {
-    if (like._id === '8d457b6c91b7578275b3a7b8') {
+    if (like._id === userId) {
       likeButton.classList.add('card__like-button_is-active')
     } else {
       likeButton.classList.remove('card__like-button_is-active')
     }
   });
-  
 
   return cardTemplateClone
 }
 
-const deleteCard = (evt) => {
-  const deletedCard = evt.target.closest('.card')
-  openDelPopup(evt)
-  // deletedCard.remove()
-}
-
-const likeCard = (evt) => {
-  toggleLikeOnCard(evt)
-}
-
-export {createCard, likeCard, deleteCard}
+export { createCard }

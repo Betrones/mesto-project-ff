@@ -1,10 +1,9 @@
 import '../pages/index.css';
-import { initialCards } from './cards';
-import { createCard, likeCard, deleteCard } from './scripts/card.js'
-import { openModal, closeModal } from './scripts/modal.js'
+import { createCard } from './scripts/card.js'
+import { openModal, closeModal, closePopupByOverClick } from './scripts/modal.js'
 import { validationConfig } from "./cfg/config.js";
 import { enableValidation, clearValidation } from './scripts/validation.js'
-import { loadCards, patchProfile, getProfileInfo, addCardToServer, deleteCardFromServer, updateAvatarOnServer, addLike, removeLike, cardCfg, updFirstCard } from './scripts/api.js'
+import { getCardsData, patchProfile, getProfileInfo, uploadCard, deleteCardFromServer, updateAvatarOnServer } from './scripts/api.js'
 
 const placesList = document.querySelector('.places__list')
 const forms = document.forms
@@ -25,22 +24,30 @@ const profName = document.querySelector('.profile__title')
 const profDesc = document.querySelector('.profile__description')
 const profImg = document.querySelector('.profile__image')
 
-getProfileInfo(profName, profDesc, profImg)
-loadCards(createCard, placesList, deleteCard, likeCard)
-
 const popupImg = document.querySelector('.popup__image')
 const popupDesc = document.querySelector('.popup__caption')
 
-const toggleLikeOnCard = (evt) => {
-  if (!evt.target.classList.contains('card__like-button_is-active')) {
-    addLike(evt.target.closest('.card').id.slice(4))
-    evt.target.classList.add('card__like-button_is-active')
-  } else {
-    removeLike(evt.target.closest('.card').id.slice(4))
-    evt.target.classList.remove('card__like-button_is-active')
-  }
+let userId
 
-  // loadCards(createCard, placesList, deleteCard, likeCard)
+Promise.all([getCardsData(), getProfileInfo()])
+.then(([cardArr, profData]) => {
+  userId = profData._id
+  renderCards(cardArr)
+  updProfileInfo(profData)
+})
+.catch(err => console.log(err))
+
+const renderCards = (cardList) => {
+  placesList.innerHTML = ''
+  cardList.forEach((card) => {
+    placesList.append(createCard(card, openCardPopup, openDelPopup, userId))
+  })
+}
+
+const updProfileInfo = (profData) => {
+  profName.textContent = profData.name
+  profDesc.textContent = profData.about
+  profImg.setAttribute('style', `background-image: url(${profData.avatar})`)
 }
 
 const openAvatarPopup = (evt) => {
@@ -48,28 +55,52 @@ const openAvatarPopup = (evt) => {
   openModal(avatarPopup)
 }
 
+const setButtonLoadingText = (target) => {
+  target.querySelector('.popup__button').textContent = 'Сохранение...'
+}
+
+const resetButtonLoadingText = (target) => {
+  target.querySelector('.popup__button').textContent = 'Сохранить'
+}
+
 const submitAvatarUpdate = (evt) => {
   evt.preventDefault()
-  const newAvatar = forms.updateAvatar.url.value
-  avatarBtn.setAttribute('style', `background-image: url(${newAvatar})`)
-  updateAvatarOnServer(newAvatar)
 
-  forms.updateAvatar.reset()
-  closeModal(avatarPopup)
+  setButtonLoadingText(evt.target)
+
+  const newAvatar = forms.updateAvatar.url.value
+
+  avatarBtn.setAttribute('style', `background-image: url(${newAvatar})`)
+
+  updateAvatarOnServer(newAvatar)
+  .then(() => {
+    forms.updateAvatar.reset()
+    closeModal(evt)
+  })
+  .finally(() => {
+    resetButtonLoadingText(evt.target)
+  })
+  .catch(err => console.log(err))
 }
 
 
 const submitEditProfileForm = (evt) => {
   evt.preventDefault()
 
+  setButtonLoadingText(evt.target)
+
   profName.textContent = forms.editProfile.name.value
   profDesc.textContent = forms.editProfile.description.value
 
   patchProfile(forms.editProfile.name.value, forms.editProfile.description.value)
-
-  forms.editProfile.reset()
-
-  closeModal(evt.target.closest('.popup'))
+  .then(() => {
+    forms.editProfile.reset()
+    closeModal(evt)
+  })
+  .finally(() => {
+    resetButtonLoadingText(evt.target)
+  })
+  .catch(err => console.log(err))
 }
 
 const openDelPopup = (evt) => {
@@ -80,11 +111,16 @@ const openDelPopup = (evt) => {
 
 const submitDeleteCard = (evt) => {
   evt.preventDefault()
+
   const cardToDelete = document.querySelector('.deleteThis')
+
   deleteCardFromServer(cardToDelete)
-  cardToDelete.classList.remove('deleteThis')
-  cardToDelete.remove()
-  closeModal(delPopup)
+  .then(() => {
+    cardToDelete.classList.remove('deleteThis')
+    cardToDelete.remove()
+    closeModal(evt)
+  })
+  .catch(err => console.log(err))
 }
 
 const openPopupEdit = () => {
@@ -102,13 +138,23 @@ const openPopupEdit = () => {
 
 const addCard = (evt) => {
   evt.preventDefault()
+  setButtonLoadingText(evt.target)
 
   const name = forms.newPlace.placeName.value
   const url = forms.newPlace.link.value
-  addCardToServer(name, url, deleteCard, likeCard, placesList, createCard)
-
-  forms.newPlace.reset()
-  closePopup(evt)
+  uploadCard(name, url)
+  .then((cardData) => {
+    console.log(cardData)
+    placesList.prepend(createCard(cardData, openCardPopup, openDelPopup, userId))
+  })
+  .then(() => {
+    forms.newPlace.reset()
+    closeModal(evt)
+  })
+  .finally(() => {
+    resetButtonLoadingText(evt.target)
+  })
+  .catch(err => console.log(err))
 }
 
 const openCardPopup = (name, link) => {
@@ -124,15 +170,15 @@ const openPopupAdd = () => {
   clearValidation(forms.newPlace, validationConfig)
 }
 
-const closePopup = (evt) => {
-  closeModal(evt.target.closest('.popup'))
-}
 
 popupsClose.forEach((elm) => {
-  elm.addEventListener('click', closePopup)
+  elm.addEventListener('click', closeModal)
 })
 
-popups.forEach((popup) => popup.classList.add('popup_is-animated'))
+popups.forEach((popup) => {
+  popup.classList.add('popup_is-animated')
+  popup.addEventListener('click', closePopupByOverClick)
+})
 
 forms.editProfile.addEventListener('submit', submitEditProfileForm)
 forms.newPlace.addEventListener('submit', addCard)
@@ -144,5 +190,3 @@ addBtn.addEventListener('click', openPopupAdd)
 avatarBtn.addEventListener('click', openAvatarPopup)
 
 enableValidation(validationConfig);
-
-export { closePopup, openCardPopup, openDelPopup, toggleLikeOnCard }
