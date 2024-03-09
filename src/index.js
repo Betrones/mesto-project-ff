@@ -70,10 +70,9 @@ const submitAvatarUpdate = (evt) => {
 
   const newAvatar = forms.updateAvatar.url.value
 
-  avatarBtn.setAttribute('style', `background-image: url(${newAvatar})`)
-
   updateAvatarOnServer(newAvatar)
   .then(() => {
+    avatarBtn.setAttribute('style', `background-image: url(${newAvatar})`)
     forms.updateAvatar.reset()
     closeModal(evt)
   })
@@ -89,11 +88,10 @@ const submitEditProfileForm = (evt) => {
 
   setButtonLoadingText(evt.target)
 
-  profName.textContent = forms.editProfile.name.value
-  profDesc.textContent = forms.editProfile.description.value
-
   patchProfile(forms.editProfile.name.value, forms.editProfile.description.value)
   .then(() => {
+    profName.textContent = forms.editProfile.name.value
+    profDesc.textContent = forms.editProfile.description.value
     forms.editProfile.reset()
     closeModal(evt)
   })

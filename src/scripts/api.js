@@ -48,6 +48,7 @@ function deleteCardFromServer(card) {
     headers: apiConfig.baseHeaders
     }
   )
+  .then(getResponseData)
 }
 
 function updateAvatarOnServer(url) {

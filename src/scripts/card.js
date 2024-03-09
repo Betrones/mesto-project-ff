@@ -7,17 +7,17 @@ const toggleLikeOnCard = (evt) => {
     addLike(likedCardId)
     .then((likedCard) => {
       document.querySelector(`#card${likedCard._id}`).querySelector('.card__like-counter').textContent = likedCard.likes.length
+      evt.target.classList.add('card__like-button_is-active')
     })
     .catch(err => console.log(err))
   } else {
     removeLike(likedCardId)
     .then((likedCard) => {
       document.querySelector(`#card${likedCard._id}`).querySelector('.card__like-counter').textContent = likedCard.likes.length
+      evt.target.classList.remove('card__like-button_is-active')
     })
     .catch(err => console.log(err))
   }
-
-  evt.target.classList.toggle('card__like-button_is-active')
 }
 
 const createCard = (cardCfg, openCardPopup, openDelPopup, userId) => {
